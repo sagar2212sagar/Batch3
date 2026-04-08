@@ -122,17 +122,17 @@
               }
             ],
             "spec": {
-              "version": 2,
-              "frame": {
-                "showTitle": true,
-                "title": "Total Resumes"
-              },
-              "widgetType": "counter",
               "encodings": {
                 "value": {
                   "fieldName": "sum(total_resumes)"
                 }
-              }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Total Resumes"
+              },
+              "version": 2,
+              "widgetType": "counter"
             }
           },
           "position": {
@@ -161,17 +161,17 @@
               }
             ],
             "spec": {
-              "version": 2,
-              "frame": {
-                "showTitle": true,
-                "title": "Selected Candidates"
-              },
-              "widgetType": "counter",
               "encodings": {
                 "value": {
                   "fieldName": "sum(selected_candidates)"
                 }
-              }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Selected Candidates"
+              },
+              "version": 2,
+              "widgetType": "counter"
             }
           },
           "position": {
@@ -200,17 +200,17 @@
               }
             ],
             "spec": {
-              "version": 2,
-              "frame": {
-                "showTitle": true,
-                "title": "Match Rate %"
-              },
-              "widgetType": "counter",
               "encodings": {
                 "value": {
                   "fieldName": "count(*)"
                 }
-              }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Match Rate %"
+              },
+              "version": 2,
+              "widgetType": "counter"
             }
           },
           "position": {
@@ -239,17 +239,17 @@
               }
             ],
             "spec": {
-              "version": 2,
-              "frame": {
-                "showTitle": true,
-                "title": "Total Jobs"
-              },
-              "widgetType": "counter",
               "encodings": {
                 "value": {
                   "fieldName": "total_jobs"
                 }
-              }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Total Jobs"
+              },
+              "version": 2,
+              "widgetType": "counter"
             }
           },
           "position": {
@@ -286,13 +286,15 @@
               }
             ],
             "spec": {
-              "version": 3,
-              "frame": {
-                "showTitle": true,
-                "title": "Match Rate %"
-              },
-              "widgetType": "bar",
               "encodings": {
+                "extra": [
+                  {
+                    "fieldName": "matched_resumes"
+                  }
+                ],
+                "label": {
+                  "show": true
+                },
                 "x": {
                   "fieldName": "match_rate_pct",
                   "scale": {
@@ -304,16 +306,14 @@
                   "scale": {
                     "type": "quantitative"
                   }
-                },
-                "label": {
-                  "show": true
-                },
-                "extra": [
-                  {
-                    "fieldName": "matched_resumes"
-                  }
-                ]
-              }
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Match Rate %"
+              },
+              "version": 3,
+              "widgetType": "bar"
             }
           },
           "position": {
@@ -346,12 +346,6 @@
               }
             ],
             "spec": {
-              "version": 3,
-              "frame": {
-                "showTitle": true,
-                "title": "Country Distribution"
-              },
-              "widgetType": "bar",
               "encodings": {
                 "x": {
                   "fieldName": "country",
@@ -365,7 +359,13 @@
                     "type": "quantitative"
                   }
                 }
-              }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Country Distribution"
+              },
+              "version": 3,
+              "widgetType": "bar"
             }
           },
           "position": {
@@ -398,12 +398,6 @@
               }
             ],
             "spec": {
-              "version": 2,
-              "frame": {
-                "showTitle": true,
-                "title": "Hardest Skills"
-              },
-              "widgetType": "table",
               "encodings": {
                 "columns": [
                   {
@@ -413,7 +407,13 @@
                     "fieldName": "matched_count"
                   }
                 ]
-              }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Hardest Skills"
+              },
+              "version": 2,
+              "widgetType": "table"
             }
           },
           "position": {
@@ -442,21 +442,21 @@
               }
             ],
             "spec": {
-              "version": 2,
+              "encodings": {
+                "columns": [
+                  {
+                    "displayName": "Reject Reason",
+                    "fieldName": "reason",
+                    "useForSearch": true
+                  }
+                ]
+              },
               "frame": {
                 "showTitle": true,
                 "title": "Rejection Reasons"
               },
-              "widgetType": "table",
-              "encodings": {
-                "columns": [
-                  {
-                    "fieldName": "reason",
-                    "useForSearch": true,
-                    "displayName": "Reject Reason"
-                  }
-                ]
-              }
+              "version": 2,
+              "widgetType": "table"
             }
           },
           "position": {
@@ -489,12 +489,6 @@
               }
             ],
             "spec": {
-              "version": 3,
-              "frame": {
-                "showTitle": true,
-                "title": "Experience Distribution"
-              },
-              "widgetType": "bar",
               "encodings": {
                 "x": {
                   "fieldName": "experience",
@@ -508,7 +502,13 @@
                     "type": "quantitative"
                   }
                 }
-              }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Experience Distribution"
+              },
+              "version": 3,
+              "widgetType": "bar"
             }
           },
           "position": {

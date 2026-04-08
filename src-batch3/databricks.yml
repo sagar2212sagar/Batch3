@@ -1,0 +1,45 @@
+# Declarative Automation Bundle configuration, more info here: https://docs.databricks.com/en/dev-tools/bundles/settings.html
+bundle:
+  name: "src-batch3"
+
+include:
+  - resources/*.yml
+  - resources/*/*.yml
+
+variables:
+    catalog_name:
+       description: The catalog to use
+    warehouse_id:
+       description: WarehouseID
+    spn:
+       description: service principle
+
+targets:
+  # The 'dev' target, for development purposes. This target is the default.
+  dev:
+    mode: development
+    default: true
+    workspace:
+      host: https://dbc-1ecc2d01-e312.cloud.databricks.com
+    variables:
+      catalog_name: resume_batch3
+      warehouse_id: 4adc0ab1f019ca6f
+      spn: 66042477-cb6c-4bb7-86cd-b2f6e05137a1
+
+
+  # The 'prod' target, used for production deployment.
+  prod:
+    mode: production
+    workspace:
+      host: https://dbc-1ecc2d01-e312.cloud.databricks.com
+      # We always use /Users/ssagarprajapati@gmail.com for all resources to make sure we only have a single copy.
+      root_path: /Users/ssagarprajapati@gmail.com/prod/Batch3_Resume
+
+    variables:
+      catalog_name: resume_batch3_prod
+      warehouse_id: 4adc0ab1f019ca6f
+      spn: 2888373a-0e10-4908-8693-0c660dbd761c
+    run_as:
+      # This runs as ssagarprajapati@gmail.com in production. We could also use a service principal here,
+      # see https://docs.databricks.com/dev-tools/bundles/permissions.html.
+      user_name: ssagarprajapati@gmail.com

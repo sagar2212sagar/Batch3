@@ -1,0 +1,88 @@
+resources:
+  jobs:
+    end_end_batch3_pipeline:
+      name: END-END-Batch3-Pipeline
+      tasks:
+        - task_key: Ingestion
+          email_notifications: {}
+          notebook_task:
+            base_parameters:
+              catalog_name: ${var.catalog_name}
+              env: prod
+              folder_id: "12344"
+            notebook_path: ../src/end_end_batch3_pipeline/Ingestion to Staging.ipynb
+            source: WORKSPACE
+          run_if: ALL_SUCCESS
+          timeout_seconds: 0
+          webhook_notifications: {}
+        - task_key: Check_Incremental
+          depends_on:
+            - task_key: Ingestion
+          condition_task:
+            left: '{{tasks.Ingestion.values.is_process}}'
+            op: EQUAL_TO
+            right: "0"
+          email_notifications: {}
+          run_if: ALL_SUCCESS
+          timeout_seconds: 0
+          webhook_notifications: {}
+        - task_key: Transformation-Staging-Silver
+          depends_on:
+            - outcome: "false"
+              task_key: Check_Incremental
+          email_notifications: {}
+          pipeline_task:
+            full_refresh: false
+            pipeline_id: ${resources.pipelines.batch3_staging_silver.id}
+          run_if: ALL_SUCCESS
+          timeout_seconds: 0
+          webhook_notifications: {}
+        - task_key: Gold_Layer
+          depends_on:
+            - task_key: Transformation-Staging-Silver
+          email_notifications: {}
+          notebook_task:
+            base_parameters:
+              catalog_name: ${var.catalog_name}
+            notebook_path: ../src/end_end_batch3_pipeline/Gold Layer.ipynb
+            source: WORKSPACE
+          run_if: ALL_SUCCESS
+          timeout_seconds: 0
+          webhook_notifications: {}
+        - task_key: Vector_Search_LLM_Gold_Layer
+          depends_on:
+            - task_key: Gold_Layer
+          email_notifications: {}
+          notebook_task:
+            base_parameters:
+              catalog_name: ${var.catalog_name}
+            notebook_path: ../src/end_end_batch3_pipeline/Gold Layer - Vector Search.ipynb
+            source: WORKSPACE
+          run_if: ALL_SUCCESS
+          timeout_seconds: 0
+          webhook_notifications: {}
+        - task_key: Dashbaord
+          depends_on:
+            - task_key: Vector_Search_LLM_Gold_Layer
+          dashboard_task:
+            dashboard_id: ${resources.dashboards.batch3_resume_company_jd_dashboard.id}
+            subscription: {}
+            warehouse_id: 4adc0ab1f019ca6f
+          email_notifications: {}
+          run_if: ALL_SUCCESS
+          timeout_seconds: 0
+      parameters:
+        - name: catalog_name
+          default: ${var.catalog_name}
+        - name: folder_id
+          default: 1u6NRe-ANzl4SrZllnbtfhl3WE5hhn6s9
+      email_notifications:
+        no_alert_for_skipped_runs: false
+      run_as:
+        user_name: ${var.spn}
+      max_concurrent_runs: 1
+      performance_target: PERFORMANCE_OPTIMIZED
+      queue:
+        enabled: true
+      timeout_seconds: 0
+      webhook_notifications: {}
