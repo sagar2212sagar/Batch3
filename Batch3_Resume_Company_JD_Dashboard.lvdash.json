@@ -1,0 +1,548 @@
+{
+  "datasets": [
+    {
+      "name": "kpi_total_resumes",
+      "displayName": "Total Resumes",
+      "queryLines": [
+        "SELECT COUNT(*) AS total_resumes FROM resume_company_data_final"
+      ],
+      "catalog": "resume_batch3",
+      "schema": "gold"
+    },
+    {
+      "name": "kpi_selected",
+      "displayName": "Selected Candidates",
+      "queryLines": [
+        "SELECT COUNT(*) AS selected_candidates FROM resume_company_data_final WHERE match = 'Selected'"
+      ],
+      "catalog": "resume_batch3",
+      "schema": "gold"
+    },
+    {
+      "name": "kpi_match_rate",
+      "displayName": "Match Rate",
+      "queryLines": [
+        "SELECT ROUND(SUM(CASE WHEN match='Selected' THEN 1 ELSE 0 END) / COUNT(*), 2) AS match_rate FROM resume_company_data_final"
+      ],
+      "catalog": "resume_batch3",
+      "schema": "gold"
+    },
+    {
+      "name": "kpi_jobs",
+      "displayName": "Total Jobs",
+      "queryLines": [
+        "SELECT COUNT(DISTINCT company_jd_id) AS total_jobs FROM resume_company_data_final"
+      ],
+      "catalog": "resume_batch3",
+      "schema": "gold"
+    },
+    {
+      "name": "match_rate_by_job",
+      "displayName": "Match Rate by Job",
+      "queryLines": [
+        "SELECT jd.title,COUNT(*) AS total_resumes,SUM(CASE WHEN g.match = 'Selected' THEN 1 ELSE 0 END) AS matched_resumes,ROUND(SUM(CASE WHEN g.match = 'Selected' THEN 1 ELSE 0 END) / COUNT(*), 2) AS match_rate_pct FROM resume_company_data_final g JOIN company_jd jd ON g.company_jd_id = jd.company_jd_id GROUP BY jd.title ORDER BY match_rate_pct DESC"
+      ],
+      "catalog": "resume_batch3",
+      "schema": "gold"
+    },
+    {
+      "name": "experience_distribution",
+      "displayName": "Experience Distribution",
+      "queryLines": [
+        "SELECT r.experience,COUNT(*) AS qualified_candidates FROM resume_company_data_final g JOIN resume_data r ON g.resume_id = r.resume_id WHERE g.match = 'Selected'GROUP BY r.experience ORDER BY qualified_candidates DESC"
+      ],
+      "catalog": "resume_batch3",
+      "schema": "gold"
+    },
+    {
+      "name": "country_distribution",
+      "displayName": "Country Distribution",
+      "queryLines": [
+        "SELECT r.country,COUNT(*) AS candidate_count FROM resume_company_data_final g JOIN resume_data r ON g.resume_id = r.resume_id GROUP BY r.country ORDER BY candidate_count DESC LIMIT 10"
+      ],
+      "catalog": "resume_batch3",
+      "schema": "gold"
+    },
+    {
+      "name": "skills_summary",
+      "displayName": "Top Skills",
+      "queryLines": [
+        "SELECT skill,COUNT(*) AS matched_count FROM (SELECT explode(split(jd.skills, ',')) AS skill FROM resume_company_data_final g JOIN company_jd jd ON g.company_jd_id = jd.company_jd_id WHERE g.match = 'Selected')GROUP BY skill ORDER BY matched_count DESC LIMIT 10"
+      ],
+      "catalog": "resume_batch3",
+      "schema": "gold"
+    },
+    {
+      "name": "rejection_reasons",
+      "displayName": "Rejection Reasons",
+      "queryLines": [
+        "SELECT reason,COUNT(*) AS frequency,ROUND(COUNT(*) * 100.0 / SUM(COUNT(*)) OVER(), 2) AS percentage FROM resume_company_data_final WHERE match = 'Rejected' GROUP BY reason ORDER BY frequency DESC LIMIT 10"
+      ],
+      "catalog": "resume_batch3",
+      "schema": "gold"
+    }
+  ],
+  "pages": [
+    {
+      "name": "main",
+      "displayName": "AI Resume Screening Dashboard",
+      "layout": [
+        {
+          "widget": {
+            "name": "title",
+            "multilineTextboxSpec": {
+              "lines": [
+                "<span style=\"font-size:36px;line-height:1.5\">**AI-Powered Resume Screening & Job Matching Intelligence**</span>"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 12,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "kpi1",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "kpi_total_resumes",
+                  "fields": [
+                    {
+                      "name": "sum(total_resumes)",
+                      "expression": "SUM(`total_resumes`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Total Resumes"
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "sum(total_resumes)"
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 2,
+            "width": 3,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "kpi2",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "kpi_selected",
+                  "fields": [
+                    {
+                      "name": "sum(selected_candidates)",
+                      "expression": "SUM(`selected_candidates`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Selected Candidates"
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "sum(selected_candidates)"
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 3,
+            "y": 2,
+            "width": 3,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "kpi3",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "kpi_match_rate",
+                  "fields": [
+                    {
+                      "name": "count(*)",
+                      "expression": "COUNT(`*`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Match Rate %"
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "count(*)"
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 2,
+            "width": 3,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "kpi4",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "kpi_jobs",
+                  "fields": [
+                    {
+                      "name": "total_jobs",
+                      "expression": "`total_jobs`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Total Jobs"
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "total_jobs"
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 9,
+            "y": 2,
+            "width": 3,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "match_rate_chart",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "match_rate_by_job",
+                  "fields": [
+                    {
+                      "name": "matched_resumes",
+                      "expression": "`matched_resumes`"
+                    },
+                    {
+                      "name": "match_rate_pct",
+                      "expression": "`match_rate_pct`"
+                    },
+                    {
+                      "name": "total_resumes",
+                      "expression": "`total_resumes`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "showTitle": true,
+                "title": "Match Rate %"
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "match_rate_pct",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "total_resumes",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "label": {
+                  "show": true
+                },
+                "extra": [
+                  {
+                    "fieldName": "matched_resumes"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 5,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "skills_chart",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "country_distribution",
+                  "fields": [
+                    {
+                      "name": "country",
+                      "expression": "`country`"
+                    },
+                    {
+                      "name": "sum(candidate_count)",
+                      "expression": "SUM(`candidate_count`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "showTitle": true,
+                "title": "Country Distribution"
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "country",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "sum(candidate_count)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 5,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "experience_chart",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "skills_summary",
+                  "fields": [
+                    {
+                      "name": "skill",
+                      "expression": "`skill`"
+                    },
+                    {
+                      "name": "matched_count",
+                      "expression": "`matched_count`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Hardest Skills"
+              },
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "skill"
+                  },
+                  {
+                    "fieldName": "matched_count"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 11,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "country_chart",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "rejection_reasons",
+                  "fields": [
+                    {
+                      "name": "reason",
+                      "expression": "`reason`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Rejection Reasons"
+              },
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "reason",
+                    "useForSearch": true,
+                    "displayName": "Reject Reason"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 11,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "rejection_table",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "experience_distribution",
+                  "fields": [
+                    {
+                      "name": "experience",
+                      "expression": "`experience`"
+                    },
+                    {
+                      "name": "qualified_candidates",
+                      "expression": "`qualified_candidates`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "showTitle": true,
+                "title": "Experience Distribution"
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "experience",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "qualified_candidates",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 17,
+            "width": 12,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "ai_summary",
+            "multilineTextboxSpec": {
+              "lines": [
+                "AI Hiring Intelligence Summary• Review match rate trends across job roles• Identify hardest skills to hire• Analyze candidate seniority distribution• Understand top rejection drivers"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 23,
+            "width": 12,
+            "height": 3
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    }
+  ],
+  "uiSettings": {
+    "theme": {
+      "widgetHeaderAlignment": "ALIGNMENT_UNSPECIFIED"
+    },
+    "applyModeEnabled": false
+  }
+}
