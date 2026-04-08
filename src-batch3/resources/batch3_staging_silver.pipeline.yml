@@ -1,0 +1,26 @@
+resources:
+  pipelines:
+    batch3_staging_silver:
+      name: Batch3_Staging_Silver
+      configuration:
+        "catalog_name": ${var.catalog_name}
+      libraries:
+        - glob:
+            include: /Workspace../src/batch3_staging_silver/transformations_bronze/**
+        - glob:
+            include: /Workspace../src/batch3_staging_silver/transformations_silver/**
+        - glob:
+            include: /Workspace../src/batch3_staging_silver/utilities/**
+      catalog: ${var.catalog_name}
+      channel: CURRENT
+      continuous: false
+      environment:
+        dependencies:
+          - PyPDF2
+          - python-docx
+      photon: true
+      root_path: ../src/batch3_staging_silver
+      schema: bronze
+      serverless: true
+      run_as:
+        user_name: ${var.spn}
