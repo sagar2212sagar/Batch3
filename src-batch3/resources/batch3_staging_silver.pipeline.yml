@@ -2,8 +2,10 @@ resources:
   pipelines:
     batch3_staging_silver:
       name: Batch3_Staging_Silver
+      allow_duplicate_names: true
       configuration:
         "catalog_name": ${var.catalog_name}
+
       libraries:
         - glob:
             include: /Workspace../src/batch3_staging_silver/transformations_bronze/**

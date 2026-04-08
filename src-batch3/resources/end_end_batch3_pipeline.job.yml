@@ -2,6 +2,7 @@ resources:
   jobs:
     end_end_batch3_pipeline:
       name: END-END-Batch3-Pipeline
+      allow_duplicate_names: true
       tasks:
         - task_key: Ingestion
           email_notifications: {}
