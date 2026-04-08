@@ -42,4 +42,4 @@ targets:
     run_as:
       # This runs as ssagarprajapati@gmail.com in production. We could also use a service principal here,
       # see https://docs.databricks.com/dev-tools/bundles/permissions.html.
-      user_name: 2888373a-0e10-4908-8693-0c660dbd761c
+      user_name: ssagarprajapati@gmail.com

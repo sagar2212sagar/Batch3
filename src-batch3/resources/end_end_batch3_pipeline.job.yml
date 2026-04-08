@@ -78,8 +78,8 @@ resources:
           default: 1u6NRe-ANzl4SrZllnbtfhl3WE5hhn6s9
       email_notifications:
         no_alert_for_skipped_runs: false
-      run_as:
-        user_name: ${var.spn}
+      # run_as:
+      #   service_principal_name: ${var.spn}
       max_concurrent_runs: 1
       performance_target: PERFORMANCE_OPTIMIZED
       queue:

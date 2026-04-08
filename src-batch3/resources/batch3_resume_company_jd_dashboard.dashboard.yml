@@ -6,3 +6,4 @@ resources:
       file_path: ../src/dashboard/batch3_resume_company_jd_dashboard.lvdash.json
       dataset_catalog: ${var.catalog_name}
       dataset_schema: "gold"
+  

@@ -22,5 +22,5 @@ resources:
       root_path: ../src/batch3_staging_silver
       schema: bronze
       serverless: true
-      run_as:
-        user_name: ${var.spn}
+      # run_as:
+      #   service_principal_name: ${var.spn}
