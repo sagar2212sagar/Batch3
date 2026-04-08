@@ -23,4 +23,4 @@ resources:
       schema: bronze
       serverless: true
       run_as:
-        user_name: ${var.spn}
+        service_principal_name: ${var.spn}

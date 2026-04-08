@@ -79,7 +79,7 @@ resources:
       email_notifications:
         no_alert_for_skipped_runs: false
       run_as:
-        user_name: ${var.spn}
+        service_principal_name: ${var.spn}
       max_concurrent_runs: 1
       performance_target: PERFORMANCE_OPTIMIZED
       queue:
